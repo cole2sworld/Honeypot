@@ -1,3 +1,6 @@
+v1.0.2 - Oct 30, 2011
+- added support for latest CB (#1368+)
+
 v1.0.1 - Sept 10, 2011
 - fixed MCBans3 support to report finding it correctly (it was finding and
 using it before, but was falsely reporting Vanilla on startup)
