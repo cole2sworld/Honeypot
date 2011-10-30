@@ -35,7 +35,7 @@ public class BansHandler {
 
     public BansHandler(Honeypot plugin) {
     	this.plugin = plugin;
-    	config = plugin.getConfig();
+    	config = plugin.getHPConfig();
     }
     
     public BansMethod setupbanHandler(JavaPlugin plugin) {
@@ -165,27 +165,27 @@ public class BansHandler {
     }
     
     private void EBkick(Player player, String reason) {
-        Bukkit.getServer().dispatchCommand(new ConsoleCommandSender(Bukkit.getServer()),
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
                 "ekick " + player.getName() + " " + reason);
     }
     
     private void KAkick(Player player, String reason) {
-        Bukkit.getServer().dispatchCommand(new ConsoleCommandSender(Bukkit.getServer()),
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
                 "kick " + player.getName() + " " + reason);
     }    
 
     private void VanillaBan(Player player) {
-        Bukkit.getServer().dispatchCommand(new ConsoleCommandSender(Bukkit.getServer()),
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
                 "ban " + player.getName());
     }
 
     private void Eban(Player player, String reason) {
-        Bukkit.getServer().dispatchCommand(new ConsoleCommandSender(Bukkit.getServer()),
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
                 "eban " + player.getName() + " " + reason);
     }
 
     private void KAban(Player player, String reason) {
-        Bukkit.getServer().dispatchCommand(new ConsoleCommandSender(Bukkit.getServer()),
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
                 "ban " + player.getName() + " " + reason);
     }
 }

@@ -20,7 +20,7 @@ public class HoneypotBlockListener extends BlockListener {
 
     public HoneypotBlockListener(Honeypot instance) {
         plugin = instance;
-        config = plugin.getConfig();
+        config = plugin.getHPConfig();
         honeyStack = plugin.getHoneyStack();
     }
 
