@@ -25,7 +25,7 @@ public class CmdHoneypot implements CommandExecutor {
     					player.sendMessage(ChatColor.GREEN + "Honeypot creation finished.");
     					Honeyfarm.setPotSelect(player, false);
     				} else {
-    					player.sendMessage(ChatColor.GREEN + "Right click a block with a " + plugin.getConfig().getToolId() + " to create a honeypot. When finished, use /hp again.");
+    					player.sendMessage(ChatColor.GREEN + "Right click a block with a " + plugin.getHPConfig().getToolId() + " to create a honeypot. When finished, use /hp again.");
     					Honeyfarm.setPotSelect(player, true);
     				}
     			}

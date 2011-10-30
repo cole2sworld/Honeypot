@@ -151,7 +151,7 @@ public class Honeypot extends JavaPlugin {
     	}
     }
 
-    public Config getConfig() { return config; }
+    public Config getHPConfig() { return config; }
     public BansHandler getBansHandler() { return bansHandler; }
     
     public void createDirs() {

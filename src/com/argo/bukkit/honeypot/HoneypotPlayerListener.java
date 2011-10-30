@@ -22,7 +22,7 @@ public class HoneypotPlayerListener extends PlayerListener {
     	Player player = event.getPlayer();
     	
     	if(Honeyfarm.getPotSelect(player) && event.getAction() == Action.RIGHT_CLICK_BLOCK){
-    		if(HoneypotPermissionsHandler.canUseCmd(player) && player.getItemInHand().getTypeId() == plugin.getConfig().getToolId()) {
+    		if(HoneypotPermissionsHandler.canUseCmd(player) && player.getItemInHand().getTypeId() == plugin.getHPConfig().getToolId()) {
     			if(!Honeyfarm.isPot(event.getClickedBlock().getLocation())) {
     				Honeyfarm.createPot(event.getClickedBlock().getLocation());
     				player.sendMessage(ChatColor.GREEN + "Honeypot created. Destroy the block to remove the honeypot.");
