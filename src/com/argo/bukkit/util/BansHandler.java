@@ -146,8 +146,12 @@ public class BansHandler {
     private void MCBan3(Player player, String sender, String reason, String type) {
         player.kickPlayer(reason); //kick for good measure
         
+        String banType = "localBan";
         // "localBan" or "globalBan" - need to make a config option
-        ban banControl = new ban( mcb3, "localBan", player.getName(), player.getAddress().toString(), sender, reason, "", "" );
+        if( config.isGlobalBan() )
+        	banType = "globalBan";
+        	
+        ban banControl = new ban( mcb3, banType, player.getName(), player.getAddress().toString(), sender, reason, "", "" );
 		banControl.start();
     }
     private void MCBan3Kick(Player player, String sender, String reason) {

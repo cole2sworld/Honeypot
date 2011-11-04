@@ -109,6 +109,10 @@ public class PropertiesFile implements Config {
     public String getLogPath() {
     	return logPath;
     }
+    
+    public boolean isGlobalBan() {
+    	return false;		// NOT SUPPORTED IN PROPERTIES FILE
+    }
 
     /*	NOT SUPPORTED IN PROPERTIES FILE.
      * 

@@ -54,4 +54,6 @@ public interface Config {
     public boolean getLogFlag();
     public boolean getShoutFlag();
     public String getLogPath();
+    
+    public boolean isGlobalBan();
 }

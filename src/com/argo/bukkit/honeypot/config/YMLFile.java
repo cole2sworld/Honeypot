@@ -97,6 +97,11 @@ public class YMLFile implements Config {
 	public int getOffensePoints() {
 		return bukkitConfig.getInt("offensePoints", 0);
 	}
+	
+	@Override
+	public boolean isGlobalBan() {
+		return bukkitConfig.getBoolean("globalBan", false);
+	}
 
 	@Override
 	public Map<Integer, Integer> getBlockPointMap() {

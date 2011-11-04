@@ -1,3 +1,8 @@
+v1.0.3 - Nov 2, 2011
+- added support for "globalBan: true" option in config.yml to support McBans3
+automatic global bans - note this is ONLY supported for config.yml and
+McBans3 (don't try with old-style honeypot.properties or McBans2)
+
 v1.0.2 - Oct 30, 2011
 - added support for latest CB (#1368+)
 
