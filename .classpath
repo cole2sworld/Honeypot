@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/home/morganm/java/lib/bukkit-0.0.1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/home/morganm/java/lib/Permissions.jar"/>
-	<classpathentry kind="lib" path="/home/morganm/java/lib/mcbans.jar"/>
+	<classpathentry kind="var" path="BUKKIT_LIB/craftbukkit-latest.jar" sourcepath="/BUKKIT_SRC"/>
+	<classpathentry kind="var" path="BUKKIT_LIB/mcbans.jar"/>
+	<classpathentry kind="var" path="BUKKIT_LIB/Permissions.jar"/>
 	<classpathentry kind="var" path="BUKKIT_LIB/mcbans3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

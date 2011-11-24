@@ -11,9 +11,9 @@ import com.argo.bukkit.honeypot.Honeypot;
 import com.argo.bukkit.honeypot.config.Config;
 import com.firestar.mcbans.mcbans;
 import com.firestar.mcbans.mcbans_handler;
-import com.mcbans.firestar.mcbans.bukkitInterface;
-import com.mcbans.firestar.mcbans.pluginInterface.ban;
-import com.mcbans.firestar.mcbans.pluginInterface.kick;
+import com.mcbans.firestar.mcbans.BukkitInterface;
+import com.mcbans.firestar.mcbans.pluginInterface.Ban;
+import com.mcbans.firestar.mcbans.pluginInterface.Kick;
 
 /** This class was originally all static methods (arrrrg)..  Refactored to be an instance so we can
  * pass in instance variables such as the Config object we're using.  It really should be re-written
@@ -29,7 +29,7 @@ public class BansHandler {
     @SuppressWarnings("unused")
 	private Honeypot plugin;
     private Config config;
-	private bukkitInterface mcb3;
+	private BukkitInterface mcb3;
     private mcbans_handler mcb;
     private BansMethod bmethod = BansMethod.VANILLA; // default
 
@@ -66,7 +66,7 @@ public class BansHandler {
 
         if (testMCBans != null) {
         	if( testMCBans.getDescription().getVersion().startsWith("3") ) {
-        		mcb3 = (bukkitInterface) testMCBans;
+        		mcb3 = (BukkitInterface) testMCBans;
 	            bmethod = BansMethod.MCBANS3;
         	}
         	else {
@@ -151,11 +151,11 @@ public class BansHandler {
         if( config.isGlobalBan() )
         	banType = "globalBan";
         	
-        ban banControl = new ban( mcb3, banType, player.getName(), player.getAddress().toString(), sender, reason, "", "" );
+        Ban banControl = new Ban( mcb3, banType, player.getName(), player.getAddress().toString(), sender, reason, "", "" );
 		banControl.start();
     }
     private void MCBan3Kick(Player player, String sender, String reason) {
-		kick kickControl = new kick( mcb3.Settings, mcb3, player.getName(), sender, reason );
+		Kick kickControl = new Kick( mcb3.Settings, mcb3, player.getName(), sender, reason );
 		kickControl.start();
     }
     
