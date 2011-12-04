@@ -7,8 +7,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.bukkit.Location;
@@ -56,6 +58,7 @@ public class Honeyfarm {
 	private static List<Location> potsList = new ArrayList<Location>();
 	private static Map<Location, Boolean> potsMap = new HashMap<Location, Boolean>();
 	private static List<String> potSelectUsers = new ArrayList<String>();
+	private static Set<CuboidRegion> regions = new HashSet<CuboidRegion>();
 	
 	private static int minX = 0, maxX = 0, minY = 0, maxY = 0, minZ = 0, maxZ = 0;
 	private static World boundsWorld = null;
@@ -66,6 +69,10 @@ public class Honeyfarm {
 		Honeyfarm.logPath = logPath;
 	}
 	
+	/** Loads data from the backing file store.
+	 * 
+	 * @return
+	 */
 	public static boolean refreshData() {
 		TextFileHandler r = new TextFileHandler(potListPath);
 		potsMap.clear();
@@ -78,31 +85,42 @@ public class Honeyfarm {
 			while(!list.isEmpty()) {
 				line++;
 				
-				coord = list.remove(0).split(",");
-				if(coord.length == 4)
-				{
-					World w = Honeypot.getCurrentInstance().getServer().getWorld(coord[0]);
-					if( w == null ) {
-						log.warning("[Honeypot] Skipping line "+line+": no World defined for world "+coord[0]);
-						continue;
-					}
-
-					potsList.add(new Location(w, new Double(coord[1]), new Double(coord[2]), new Double(coord[3])));
-					potsMap.put(new Location(w, new Double(coord[1]), new Double(coord[2]), new Double(coord[3])), Boolean.TRUE);
+				String thisLine = list.remove(0);
+				
+				// deal with region lines
+				if( thisLine.startsWith("region:") ) {
+					String regionString = thisLine.substring(7);
+					CuboidRegion region = CuboidRegion.importFromString(regionString);
+					regions.add(region);
 				}
-				else if(coord.length == 3) {
-					// for backwards compatibility, if no world specified, just assume "world"
-					World w = Honeypot.getCurrentInstance().getServer().getWorld("world");
-					if( w == null ) {
-						log.warning("[Honeypot] Skipping line "+line+": line using old-style definition, tried to assume for world \"world\", but no \"world\" found");
-						continue;
+				// standard single block line
+				else {
+					coord = thisLine.split(",");
+					if(coord.length == 4)
+					{
+						World w = Honeypot.getCurrentInstance().getServer().getWorld(coord[0]);
+						if( w == null ) {
+							log.warning("[Honeypot] Skipping line "+line+": no World defined for world "+coord[0]);
+							continue;
+						}
+	
+						potsList.add(new Location(w, new Double(coord[1]), new Double(coord[2]), new Double(coord[3])));
+						potsMap.put(new Location(w, new Double(coord[1]), new Double(coord[2]), new Double(coord[3])), Boolean.TRUE);
 					}
-
-					potsList.add(new Location(w, new Double(coord[0]), new Double(coord[1]), new Double(coord[2])));
-					potsMap.put(new Location(w, new Double(coord[0]), new Double(coord[1]), new Double(coord[2])), Boolean.TRUE);
+					else if(coord.length == 3) {
+						// for backwards compatibility, if no world specified, just assume "world"
+						World w = Honeypot.getCurrentInstance().getServer().getWorld("world");
+						if( w == null ) {
+							log.warning("[Honeypot] Skipping line "+line+": line using old-style definition, tried to assume for world \"world\", but no \"world\" found");
+							continue;
+						}
+	
+						potsList.add(new Location(w, new Double(coord[0]), new Double(coord[1]), new Double(coord[2])));
+						potsMap.put(new Location(w, new Double(coord[0]), new Double(coord[1]), new Double(coord[2])), Boolean.TRUE);
+					}
+					else
+						log.warning("[Honeypot] Skipping line "+line+": incorrect number of data elements");
 				}
-				else
-					log.warning("[Honeypot] Skipping line "+line+": incorrect number of data elements");
 			}
 			
 			calculateBounds();
@@ -168,12 +186,16 @@ public class Honeyfarm {
 		if( (maxX - minX < 300) && (maxZ - minZ < 300) && (maxY - minY < 30) )
 			useBoundsChecking = false;
 	}
-
+	
 	public static boolean saveData() {
 		TextFileHandler r = new TextFileHandler(potListPath);
 
 		List<String> tmp = new ArrayList<String>();
 
+		for(CuboidRegion region : regions) {
+			tmp.add("region:"+region.exportAsString());
+		}
+		
 		for(Location loc : potsMap.keySet()) {
 			tmp.add(loc.getWorld().getName() + "," + loc.getX() + "," + loc.getY() + "," + loc.getZ());
 		}
@@ -182,6 +204,7 @@ public class Honeyfarm {
 		} catch (IOException ex) {
 			return false;
 		}
+		
 		return true;
 	}
 
@@ -197,6 +220,15 @@ public class Honeyfarm {
 		x = loc.getBlockX();
 		y = loc.getBlockY();
 		z = loc.getBlockZ();
+		
+		// check regions first, if any
+		if( regions.size() > 0 ) {
+			for(CuboidRegion region : regions) {
+				if( region.contains(loc) ) {
+					return true;
+				}
+			}
+		}
 		
 		// do efficient bounds checking. if the location is outside of our calculated honeypot bounds, it's
 		// obviously not a honeypot block, no need to do a Hash lookup for the block.
@@ -224,6 +256,10 @@ public class Honeyfarm {
 		}
 	}
 
+	public static void createPot(CuboidRegion region) {
+		regions.add(region);
+	}
+	
 	public static void createPot(Location loc) {
 		if(!isPot(loc)) {
 			potsList.add(loc);
