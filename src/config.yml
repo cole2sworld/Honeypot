@@ -1,0 +1,54 @@
+toolID: 269
+kickFlag: false
+banFlag: true
+shoutFlag: true
+
+# set to true for MCBans global bans. Be sure to follow their
+# guidelines:
+# http://wiki.mcbans.com/display/MCBans/Honeypot+Guidelines
+globalBan: false
+
+banLog: true
+banLogLocation: true
+logPath: plugins/Honeypot/honeypot.log
+
+honeypotKickBanSender: '[Honeypot]'
+honeypotBanReason: Destroyed honeypot block.
+honeypotKickMessage: '[Honeypot] You have been caught destroying a honeypot block.'
+
+# can be used in lieu of "offensePoints", is a simpler concept.
+# Basically counts each block break as one infraction so, for
+# example, you can require that 3 honeypot blocks must be broken
+# before action is taken.
+#offenseCount: 0
+
+# how may offense points until they are banned
+#offensePoints: 3
+
+# ability to make some blocks worth more or less points. Helpful
+# if you're honeypotting a region that is a honeypot statue,
+# for example, so you could ignore dirt/snow blocks, etc.
+# This example makes iron/gold/diamond blocks worth 3 points
+# and grass,snow and ice blocks worth 0
+#offensePointMap:
+#  "56": 3
+#  "41": 3
+#  "42": 3
+#  "2": 0
+#  "78": 0
+#  "79": 0
+
+# This defines which permission system is used. Vault and WEPIF
+# (WEPIF is built into WorldEdit) are preferred, they both provide
+# a nice interface to all other permission systems. If you don't have
+# or don't want to use either of those, there is some native support
+# for a few other permission systems that you can use. These are
+# checked in the order they are listed for existence, and the
+# first one to match is used.
+permissions:
+  - vault
+  - wepif
+  - pex
+  - perm2-compat
+  - superperms
+  - ops

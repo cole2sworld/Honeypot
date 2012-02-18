@@ -1,19 +1,23 @@
-package com.argo.bukkit.honeypot;
+package com.argo.bukkit.honeypot.listener;
 
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockListener;
 
+import com.argo.bukkit.honeypot.HoneyStack;
+import com.argo.bukkit.honeypot.Honeyfarm;
+import com.argo.bukkit.honeypot.Honeypot;
 import com.argo.bukkit.honeypot.config.Config;
 
-public class HoneypotBlockListener extends BlockListener {
+public class HoneypotBlockListener implements Listener {
 
-    private static final Logger log = Honeypot.log;
     private Honeypot plugin;
     private HoneyStack honeyStack;
     private Config config;
@@ -24,13 +28,13 @@ public class HoneypotBlockListener extends BlockListener {
         honeyStack = plugin.getHoneyStack();
     }
 
-    @Override
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
 
         if (Honeyfarm.isPot(block.getLocation())) {
             Player player = event.getPlayer();
-            if (!HoneypotPermissionsHandler.canBreak(player)) {
+            if( !plugin.hasPermission(player, "honeypot.break") ) {
             	boolean usingHoneyPoints = false;
             	int blockPoints = 0;
             	int maxPoints = 0;
@@ -49,8 +53,9 @@ public class HoneypotBlockListener extends BlockListener {
             		Map<Integer, Integer> typeMap = config.getBlockPointMap();
             		if( typeMap != null ) {
             			Integer points = typeMap.get(blockId);
-            			System.out.println("points for blockId "+blockId+" = "+points);
-            			
+            			final String materialName = Material.getMaterial(blockId).toString();
+            			plugin.log("points for blockId "+blockId+" ("+materialName+") = "+points);
+
             			if( points != null )
             				blockPoints = points.intValue();
             		}
@@ -74,7 +79,7 @@ public class HoneypotBlockListener extends BlockListener {
                             + Honeypot.prettyPrintLocation(block.getLocation()) 
                             + ", break count/points: " + points;
 
-                    log.info("[Honeypot] " + logMessage);
+                    plugin.log(logMessage);
                     if (config.getLogFlag()) {
                         Honeyfarm.log(logMessage);
                     }
@@ -99,12 +104,14 @@ public class HoneypotBlockListener extends BlockListener {
                             config.getPotReason());
                 }
 
+    			final String materialName = Material.getMaterial(block.getTypeId()).toString();
                 String logMessage = "Player " + player.getName() + 
-                        " was caught breaking a honeypot block at location "
+                        " was caught breaking a honeypot block (material="+materialName
+                        +") at location "
                         + Honeypot.prettyPrintLocation(block.getLocation()) +
                         ".";
 
-                log.info(logMessage);
+                plugin.log(logMessage);
                 if (config.getLogFlag()) {
                     Honeyfarm.log(logMessage);
                 }

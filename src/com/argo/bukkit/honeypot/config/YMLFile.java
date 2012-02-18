@@ -5,12 +5,13 @@ package com.argo.bukkit.honeypot.config;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.config.Configuration;
 
 import com.argo.bukkit.honeypot.Honeypot;
 
@@ -21,21 +22,21 @@ import com.argo.bukkit.honeypot.Honeypot;
 public class YMLFile implements Config {
 	private static final Logger log = Honeypot.log;
 	
-	@SuppressWarnings("unused")
 	private JavaPlugin plugin;
-	private Configuration bukkitConfig;
+	private FileConfiguration bukkitConfig;
 	private Map<Integer, Integer> pointKeyMap;
 	
 	@Override
-	public void load(JavaPlugin plugin) {
-		bukkitConfig = plugin.getConfiguration();
-		bukkitConfig.load();
+	public void load(final JavaPlugin plugin) {
+		this.plugin = plugin;
+		
+		// this forces Bukkit to load the config
+		bukkitConfig = plugin.getConfig();
 	}
 	
 	@Override
 	public void save() throws Exception {
-		if( !bukkitConfig.save() )
-			throw new Exception("[Honeypot] error saving config.yml");
+		plugin.saveConfig();
 	}
 	
 	@Override
@@ -109,7 +110,9 @@ public class YMLFile implements Config {
 		// now, otherwise we just return the cached map.
 		if( pointKeyMap == null ) {
 			pointKeyMap = new HashMap<Integer, Integer>();
-			List<String> configPointKeys = bukkitConfig.getKeys("offensePointMap");
+			ConfigurationSection section = bukkitConfig.getConfigurationSection("offensePointMap");
+			Set<String> configPointKeys = section.getKeys(false);
+//			List<String> configPointKeys = bukkitConfig.getKeys("offensePointMap");
 
 			if( configPointKeys == null || configPointKeys.isEmpty() )
 				return pointKeyMap;
@@ -143,7 +146,7 @@ public class YMLFile implements Config {
 
 				int value = bukkitConfig.getInt("offensePointMap."+o, -1);
 
-				if( value > 0 )
+				if( value > -1 )
 					pointKeyMap.put(Integer.valueOf(keyInt), Integer.valueOf(value));
 			}
 		}
@@ -155,7 +158,10 @@ public class YMLFile implements Config {
 	 * (which forces the defaults to be loaded) and then save them out to disk.
 	 * 
 	 */
+	/* No longer used as a result of new-style config making this obsolete.
 	public void firstLoad() {
+		options().copyDefaults(true);
+		
 		getBanFlag();
 		getBlockPointMap();
 		getKickFlag();
@@ -174,4 +180,5 @@ public class YMLFile implements Config {
 			save();
 		} catch(Exception e) { e.printStackTrace(); }
 	}
+	*/
 }

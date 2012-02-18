@@ -1,14 +1,20 @@
-package com.argo.bukkit.honeypot;
+package com.argo.bukkit.honeypot.listener;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class HoneypotPlayerListener extends PlayerListener {
+import com.argo.bukkit.honeypot.HoneyStack;
+import com.argo.bukkit.honeypot.Honeyfarm;
+import com.argo.bukkit.honeypot.Honeypot;
+
+public class HoneypotPlayerListener implements Listener {
 	private Honeypot plugin;
     private HoneyStack honeyStack;
 
@@ -17,12 +23,12 @@ public class HoneypotPlayerListener extends PlayerListener {
     	honeyStack = plugin.getHoneyStack();
     }
 
-    @Override
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerInteract(PlayerInteractEvent event) {
     	Player player = event.getPlayer();
     	
     	if(Honeyfarm.getPotSelect(player) && event.getAction() == Action.RIGHT_CLICK_BLOCK){
-    		if(HoneypotPermissionsHandler.canUseCmd(player) && player.getItemInHand().getTypeId() == plugin.getHPConfig().getToolId()) {
+    		if(player.getItemInHand().getTypeId() == plugin.getHPConfig().getToolId() && plugin.hasPermission(player, "honeypot.create")) {
     			if(!Honeyfarm.isPot(event.getClickedBlock().getLocation())) {
     				Honeyfarm.createPot(event.getClickedBlock().getLocation());
     				player.sendMessage(ChatColor.GREEN + "Honeypot created. Destroy the block to remove the honeypot.");
@@ -33,12 +39,12 @@ public class HoneypotPlayerListener extends PlayerListener {
     	}
     }
     
-    @Override
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerKick(PlayerKickEvent event) {
     	honeyStack.playerLogout(event.getPlayer().getName());
     }
     
-    @Override
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerQuit(PlayerQuitEvent event) {
     	honeyStack.playerLogout(event.getPlayer().getName());
     }

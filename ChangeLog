@@ -1,3 +1,12 @@
+v1.2 - Feb 18, 2011
+* updated to latest Bukkit-1.1-R4 (RB #1938)
+* updated to new style Bukkit configuration
+* updated to new Bukkit event system
+* updated to modern Permission system, borrowed from my HSP plugin. Leverages
+Vault, WorldEdit, superperms, etc. It works out of the box, but if you want to
+do configuration as an admin, see documentation: http://goo.gl/TErPh
+* code cleanup: removed all System.out calls in favor of log.info
+
 v1.1 - Dec 3, 2011
 - added support for "/hp region" to record a WE region as a Honeypot. This
 is NOT intended as a WorldGuard replacement, use sparingly and intelligently.

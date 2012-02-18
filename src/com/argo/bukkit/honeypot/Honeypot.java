@@ -4,8 +4,7 @@ import java.io.File;
 import java.util.logging.Logger;
 
 import org.bukkit.Location;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,7 +12,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.argo.bukkit.honeypot.config.Config;
 import com.argo.bukkit.honeypot.config.PropertiesFile;
 import com.argo.bukkit.honeypot.config.YMLFile;
+import com.argo.bukkit.honeypot.listener.HoneypotBlockListener;
+import com.argo.bukkit.honeypot.listener.HoneypotPlayerListener;
 import com.argo.bukkit.util.BansHandler;
+import com.argo.bukkit.util.PermissionSystem;
 
 public class Honeypot extends JavaPlugin {
 
@@ -24,7 +26,12 @@ public class Honeypot extends JavaPlugin {
     private HoneyStack honeyStack;
     private Config config;
     private BansHandler bansHandler;
+    private PermissionSystem perm;
 
+    public void log(final String message) {
+    	log.info("[Honeypot] "+message);
+    }
+    
     /** I think there's a correct "PluginManager" way to get plugin instances, but
      * I'm cheating and using a static instance ala the Singleton pattern for now.
      * 
@@ -38,48 +45,37 @@ public class Honeypot extends JavaPlugin {
         instance = this;
         honeyStack = new HoneyStack();
 
+        perm = new PermissionSystem(this, log, "[Honeypot] ");
+        perm.setupPermissions();
+        
         createDirs();
 
         loadConfig();
         Honeyfarm.setLogPath(config.getLogPath());
 
         if (!Honeyfarm.refreshData()) {
-            System.out.println("Honeypot: an error occured while trying to"
-                    + " load the honeypot list.");
-        }
-        if (!HoneypotPermissionsHandler.setupPermissions(this)) {
-            System.out.println("Honeypot: Permissions plugin not found, using "
-                    + "default.");
-        } else {
-            System.out.println("Honeypot: Permissions plugin found, using "
-                    + "that.");
+        	log("an error occured while trying to load the honeypot list.");
         }
         
         bansHandler = new BansHandler(this);
         switch (bansHandler.setupbanHandler(this)) {
             case VANILLA:
-                System.out.println("Honeypot: Didn't find ban plugin, using "
-                        + "vanilla.");
+            	log("Didn't find ban plugin, using vanilla.");
                 break;
             case MCBANS:
-                System.out.println("Honeypot: MCBans plugin found, using "
-                        + "that.");
+            	log("MCBans plugin found, using that.");
                 break;
             case MCBANS3:
-                System.out.println("Honeypot: MCBans3 plugin found, using "
-                        + "that.");
+                log("MCBans3 plugin found, using that.");
                 break;
             case EASYBAN:
-                System.out.println("Honeypot: EasyBan plugin found, using "
-                        + "that.");
+                log("EasyBan plugin found, using that.");
                 break;
             case KABANS:
-                System.out.println("Honeypot: KiwiAdmin plugin found, using "
-                        + "that.");
+                log("KiwiAdmin plugin found, using that.");
                 break;
             default:
-                System.out.println("Honeypot: Didn't find ban plugin, using "
-                        + "vanilla.");
+                log("Didn't find ban plugin, using vanilla.");
                 break;
         }
 
@@ -87,32 +83,30 @@ public class Honeypot extends JavaPlugin {
         playerListener = new HoneypotPlayerListener(this);
 
         PluginManager pm = getServer().getPluginManager();
-        pm.registerEvent(Type.PLAYER_INTERACT, playerListener, Priority.Low,
-                this);
-        pm.registerEvent(Type.BLOCK_BREAK, blockListener, Priority.Highest,
-                this);
+        pm.registerEvents(blockListener, this);
+        pm.registerEvents(playerListener, this);
+        
+//        pm.registerEvent(Type.PLAYER_INTERACT, playerListener, Priority.Low, this);
+//        pm.registerEvent(Type.BLOCK_BREAK, blockListener, Priority.Highest, this);
         getCommand("honeypot").setExecutor(new CmdHoneypot(this));
 
         // schedule to run every minute (20 ticks * 60 seconds)
         getServer().getScheduler().scheduleSyncRepeatingTask(this, honeyStack, 1200, 1200);
         
         PluginDescriptionFile pdf = this.getDescription();
-        System.out.println(pdf.getName() + " revision " + pdf.getVersion() +
-                " by " + pdf.getAuthors().get(0) + " succesfully loaded.");
+        log(pdf.getName() + " version " + pdf.getVersion() + " loaded.");
     }
 
     public void onDisable() {
         if (!Honeyfarm.saveData()) {
-            System.out.println("Honeypot: an error occured while trying to save"
-                    + " the honeypot list.");
+            log("an error occured while trying to save the honeypot list.");
         }
 
         honeyStack.rollBackAll();
         getServer().getScheduler().cancelTasks(this);
 
         PluginDescriptionFile pdf = this.getDescription();
-        System.out.println(pdf.getName() + " revision " + pdf.getVersion() + 
-                " by " + pdf.getAuthors().get(0) + " succesfully disabled.");
+        log(pdf.getName() + " version" + pdf.getVersion() + " disabled.");
     }
     
     private void loadConfig() {
@@ -129,28 +123,23 @@ public class Honeypot extends JavaPlugin {
     		config = new PropertiesFile();
     	}
     	else {							// neither exists yet (new installation), create and use new-style
-    		// TODO: add call to copy default YML into place. Bukkit will work fine without this, but if
-    		// we build and copy one into place, we can have comments in the default file which helps
-    		// people with the configuration.
-    		
+    		this.saveDefaultConfig();
     		config = new YMLFile();
-    		try {
-    			config.load(this);
-    		} catch(Exception e) {} 	// ignored for now, the real load is later
-    		
-    		((YMLFile) config).firstLoad();
     	}
     	
     	try {
     		config.load(this);
     	}
     	catch(Exception e) {
-            System.out.println("Honeypot: an error occured while "
-	            + "trying to load the properties file.");
+            log("an error occured while trying to load the config file.");
     		e.printStackTrace();
     	}
     }
 
+    public boolean hasPermission(CommandSender sender, String permissionNode) {
+    	return perm.has(sender, permissionNode);
+    }
+    
     public Config getHPConfig() { return config; }
     public BansHandler getBansHandler() { return bansHandler; }
     

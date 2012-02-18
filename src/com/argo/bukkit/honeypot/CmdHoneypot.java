@@ -23,7 +23,7 @@ public class CmdHoneypot implements CommandExecutor {
     	if(args.length == 0) {
     		if(sender instanceof Player) {
     			Player player = (Player)sender;
-    			if(!HoneypotPermissionsHandler.canUseCmd(player)) {
+    			if( !plugin.hasPermission(sender, "honeypot.create") ) {
     				player.sendMessage(ChatColor.RED + "You are not allowed to use this command.");
     			} else {
     				if(Honeyfarm.getPotSelect(player)) {
