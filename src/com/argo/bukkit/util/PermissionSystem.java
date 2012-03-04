@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.argo.bukkit.util;
 
 import java.util.ArrayList;
@@ -12,10 +9,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
@@ -31,12 +28,18 @@ import com.sk89q.wepif.PermissionsResolverManager;
  *   WorldEdit 5.x: http://build.sk89q.com/
  *   PermissionsEx: http://goo.gl/jthCz
  *   Permissions 2.7 or 3.x: http://goo.gl/liHFt (2.7) or http://goo.gl/rn4LP (3.x) 
+ *   
+ * Author's note: The "ideal" design would be to setup an interface class and let each permission
+ *   type implement that interface and use polymorphism. In fact, that's how Vault and WEPIF work.
+ *   However, the design goal for this class is to have a single class I can use between projects
+ *   that implements permissions abstraction, thus the less-than-great C-style integer values,
+ *   switch statements and if/else ladders.
  * 
  * @author morganm
  *
  */
 public class PermissionSystem {
-	// class version: 9
+	// class version: 11
 	public static final int SUPERPERMS = 0x00;		// default
 	public static final int VAULT = 0x01;
 	public static final int WEPIF = 0x02;
@@ -89,6 +92,9 @@ public class PermissionSystem {
 	public int getSystemInUse() { return systemInUse; }
 	
 	public void setupPermissions() {
+		setupPermissions(true);
+	}
+	public void setupPermissions(final boolean verbose) {
 		List<String> permPrefs = null;
 		if( plugin.getConfig().get("permissions") != null ) {
 			permPrefs = plugin.getConfig().getStringList("permissions");
@@ -107,39 +113,45 @@ public class PermissionSystem {
 			if( "vault".equalsIgnoreCase(system) ) {
 				if( setupVaultPermissions() ) {
 					systemInUse = VAULT;
-		        	log.info(logPrefix+"using Vault permissions");
+					if( verbose )
+						log.info(logPrefix+"using Vault permissions");
 					break;
 				}
 			}
 			else if( "wepif".equalsIgnoreCase(system) ) {
 				if( setupWEPIFPermissions() ) {
 					systemInUse = WEPIF;
-		        	log.info(logPrefix+"using WEPIF permissions");
+					if( verbose )
+						log.info(logPrefix+"using WEPIF permissions");
 					break;
 				}
 			}
 			else if( "pex".equalsIgnoreCase(system) ) {
 				if( setupPEXPermissions() ) {
 					systemInUse = PEX;
-		        	log.info(logPrefix+"using PEX permissions");
+					if( verbose )
+						log.info(logPrefix+"using PEX permissions");
 					break;
 				}
 			}
 			else if( "perm2".equalsIgnoreCase(system) || "perm2-compat".equalsIgnoreCase(system) ) {
 				if( setupPerm2() ) {
 					systemInUse = PERM2_COMPAT;
-		        	log.info(logPrefix+"using Perm2-compatible permissions");
+					if( verbose )
+						log.info(logPrefix+"using Perm2-compatible permissions");
 					break;
 				}
 			}
 			else if( "superperms".equalsIgnoreCase(system) ) {
 				systemInUse = SUPERPERMS;
-	        	log.info(logPrefix+"using Superperms permissions");
+				if( verbose )
+					log.info(logPrefix+"using Superperms permissions");
 	        	break;
 			}
 			else if( "ops".equalsIgnoreCase(system) ) {
 				systemInUse = OPS;
-	        	log.info(logPrefix+"using basic Op check for permissions");
+				if( verbose )
+					log.info(logPrefix+"using basic Op check for permissions");
 	        	break;
 			}
 		}
@@ -359,6 +371,8 @@ public class PermissionSystem {
 		    	// version "5.0" is equivalent to build #670
 		    	else if( "5.0".equals(version) )
 		    		versionNumber = 670;
+		    	else if( version.startsWith("5.") )		// 5.x series
+		    		versionNumber = 840;
 		    	else {
 			    	int index = version.indexOf('-');
 			    	versionNumber = Integer.parseInt(version.substring(0, index));
@@ -366,6 +380,7 @@ public class PermissionSystem {
 	    	}
 	    	catch(Exception e) {}	// catch any NumberFormatException or anything else
 	    	
+//	    	System.out.println("WorldEdit version: "+version+", number="+versionNumber);
 	    	if( versionNumber < 660 ) {
 	    		log.info(logPrefix + "You are currently running version "+version+" of WorldEdit. WEPIF was changed in #660, please update to latest WorldEdit. (skipping WEPIF for permissions)");
 	    		return false;
