@@ -3,7 +3,5 @@ bin
 lib
 .classpath
 .project
-/build.xml
-/buildold.xml
-/*.gitignore
 target
+.settings
