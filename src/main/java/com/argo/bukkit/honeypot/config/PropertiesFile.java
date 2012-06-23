@@ -7,8 +7,6 @@ import java.util.Map;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import com.argo.util.PropertyHandler;
 
 public class PropertiesFile implements Config {
@@ -63,7 +61,7 @@ public class PropertiesFile implements Config {
 
 	@Override
 	public void save() throws Exception {
-		throw new NotImplementedException();
+		throw new Exception("Not implemented");
 	}
 	
     public int getOffenseCount() {
