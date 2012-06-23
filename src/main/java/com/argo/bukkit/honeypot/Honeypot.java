@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.argo.bukkit.honeypot.config.Config;
@@ -15,21 +14,24 @@ import com.argo.bukkit.honeypot.config.YMLFile;
 import com.argo.bukkit.honeypot.listener.HoneypotBlockListener;
 import com.argo.bukkit.honeypot.listener.HoneypotPlayerListener;
 import com.argo.bukkit.util.BansHandler;
+import com.argo.bukkit.util.JarUtils;
 import com.argo.bukkit.util.PermissionSystem;
 
 public class Honeypot extends JavaPlugin {
 
     public static final Logger log = Logger.getLogger("Honeypot");
+    public static final String logPrefix = "[Honeypot] ";
+    
     private static Honeypot instance;
-    private HoneypotBlockListener blockListener;
-    private HoneypotPlayerListener playerListener;
     private HoneyStack honeyStack;
     private Config config;
     private BansHandler bansHandler;
     private PermissionSystem perm;
+    private JarUtils jarUtils;
+	private int buildNumber = -1;
 
     public void log(final String message) {
-    	log.info("[Honeypot] "+message);
+    	log.info(logPrefix+message);
     }
     
     /** I think there's a correct "PluginManager" way to get plugin instances, but
@@ -45,7 +47,7 @@ public class Honeypot extends JavaPlugin {
         instance = this;
         honeyStack = new HoneyStack();
 
-        perm = new PermissionSystem(this, log, "[Honeypot] ");
+        perm = new PermissionSystem(this, log, logPrefix);
         perm.setupPermissions();
         
         createDirs();
@@ -82,22 +84,18 @@ public class Honeypot extends JavaPlugin {
                 break;
         }
 
-        blockListener = new HoneypotBlockListener(this);
-        playerListener = new HoneypotPlayerListener(this);
-
-        PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(blockListener, this);
-        pm.registerEvents(playerListener, this);
+        getServer().getPluginManager().registerEvents(new HoneypotBlockListener(this), this);
+        getServer().getPluginManager().registerEvents(new HoneypotPlayerListener(this), this);
         
-//        pm.registerEvent(Type.PLAYER_INTERACT, playerListener, Priority.Low, this);
-//        pm.registerEvent(Type.BLOCK_BREAK, blockListener, Priority.Highest, this);
         getCommand("honeypot").setExecutor(new CmdHoneypot(this));
 
         // schedule to run every minute (20 ticks * 60 seconds)
         getServer().getScheduler().scheduleSyncRepeatingTask(this, honeyStack, 1200, 1200);
-        
+
+    	jarUtils = new JarUtils(this, getFile(), log, logPrefix);
+		buildNumber = jarUtils.getBuildNumber();
         PluginDescriptionFile pdf = this.getDescription();
-        log(pdf.getName() + " version " + pdf.getVersion() + " loaded.");
+		log("version "+pdf.getVersion()+", build "+buildNumber+" is enabled");
     }
 
     public void onDisable() {
@@ -109,7 +107,7 @@ public class Honeypot extends JavaPlugin {
         getServer().getScheduler().cancelTasks(this);
 
         PluginDescriptionFile pdf = this.getDescription();
-        log(pdf.getName() + " version" + pdf.getVersion() + " disabled.");
+		log("version "+pdf.getVersion()+", build "+buildNumber+" is disabled");
     }
     
     private void loadConfig() {
