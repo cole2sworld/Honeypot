@@ -1,5 +1,8 @@
 v1.4 - Jun 23, 2012
 * updated build system to maven (easier for others to contribute)
+* minor code cleanup (MCBans2 no longer supported)
+* built against latest Bukkit RB 1.2.5-R4.0
+* debug symbols turned on for better stack traces
 
 v1.3 - Mar 3, 2012
 * merged dogbig's pull request for Ultraban support
