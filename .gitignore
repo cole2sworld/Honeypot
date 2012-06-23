@@ -6,3 +6,4 @@ lib
 /build.xml
 /buildold.xml
 /*.gitignore
+target

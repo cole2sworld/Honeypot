@@ -1,3 +1,6 @@
+v1.4 - Jun 23, 2012
+* updated build system to maven (easier for others to contribute)
+
 v1.3 - Mar 3, 2012
 * merged dogbig's pull request for Ultraban support
 

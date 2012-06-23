@@ -1,0 +1,11 @@
+This allows you to define point values to block types and if the
+point max is exceeded, action is taken. For example if "offensePoints" is
+set to 3, you could define breaking your diamond/gold/ore blocks as 3 points
+and anyone breaking them insta-banned, whereas perhaps breaking the stone/wood
+parts of your honeypot structure are only worth 1 point (the default) and
+therefore they'd have to break 3 of them to get banned.  Long-term goal here
+is to allow you to Honeypot an entire region (ala WorldGuard regions) but give
+some fine-grain control so people aren't banned for hitting leaves or flowers
+(which you could set to 0 points, or whatever makes sense for you and your
+honeypot structure).
+

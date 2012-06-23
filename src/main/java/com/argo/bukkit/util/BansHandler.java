@@ -8,8 +8,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.argo.bukkit.honeypot.Honeypot;
 import com.argo.bukkit.honeypot.config.Config;
-import com.firestar.mcbans.mcbans;
-import com.firestar.mcbans.mcbans_handler;
 import com.mcbans.firestar.mcbans.BukkitInterface;
 import com.mcbans.firestar.mcbans.pluginInterface.Ban;
 import com.mcbans.firestar.mcbans.pluginInterface.Kick;
@@ -29,7 +27,6 @@ public class BansHandler {
 	private Honeypot plugin;
     private Config config;
 	private BukkitInterface mcb3;
-    private mcbans_handler mcb;
     private BansMethod bmethod = BansMethod.VANILLA; // default
 
     public BansHandler(Honeypot plugin) {
@@ -72,14 +69,11 @@ public class BansHandler {
         }
 
         if (testMCBans != null) {
-        	if( testMCBans.getDescription().getVersion().startsWith("3") ) {
+        	// we only support version 3+ now, so dropped version test. - morganm 3/23/12
+//        	if( testMCBans.getDescription().getVersion().startsWith("3") ) {
         		mcb3 = (BukkitInterface) testMCBans;
 	            bmethod = BansMethod.MCBANS3;
-        	}
-        	else {
-	            mcb = ((mcbans) testMCBans).mcb_handler;
-	            bmethod = BansMethod.MCBANS;
-        	}
+//        	}
         } else if (testEB != null) {
             bmethod = BansMethod.EASYBAN;
         } else if (testKA != null) {
@@ -109,9 +103,6 @@ public class BansHandler {
                 p.kickPlayer(config.getPotMsg());
                 VanillaBan(p);
                 break;
-            case MCBANS:
-                MCBan(p, sender, reason, "");
-                break;
             case MCBANS3:
             	MCBan3(p, sender, reason, "");
             	break;
@@ -136,9 +127,6 @@ public class BansHandler {
         switch (bmethod) {
             case VANILLA:
                 p.kickPlayer(reason);
-                break;
-            case MCBANS:
-                MCBanKick(p, sender, reason);
                 break;
             case MCBANS3:
             	MCBan3Kick(p, sender, reason);
@@ -172,15 +160,6 @@ public class BansHandler {
     private void MCBan3Kick(Player player, String sender, String reason) {
 		Kick kickControl = new Kick( mcb3.Settings, mcb3, player.getName(), sender, reason );
 		kickControl.start();
-    }
-    
-    private void MCBan(Player player, String sender, String reason, String type) {
-        player.kickPlayer(reason); //kick for good measure
-        mcb.ban(player.getName(), sender, reason, type);
-    }
-
-    private void MCBanKick(Player player, String sender, String reason) {
-        mcb.kick(player.getName(), sender, reason);
     }
     
     private void EBkick(Player player, String reason) {
