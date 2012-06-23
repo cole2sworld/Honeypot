@@ -1,6 +1,7 @@
-name: Honeypot
+name: ${project.name}
 main: com.argo.bukkit.honeypot.Honeypot
-version: 1.3
+url: ${project.url}
+version: ${project.version}
 author: Argomirr,morganm,dog.big
 softdepend: [MCBans, WorldEdit]
 commands:
