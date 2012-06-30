@@ -97,7 +97,8 @@ public class HoneyStack implements Runnable {
 	 * 
 	 */
 	public void rollBackAll() {
-		Set<String> players = playerHoneyBreaks.keySet();
+		// create temporary copy of hash to avoid concurrent modification exception
+		Set<String> players = new HashMap<String, ArrayList<Location>>(playerHoneyBreaks).keySet();
 		if( players == null )
 			return;
 		
