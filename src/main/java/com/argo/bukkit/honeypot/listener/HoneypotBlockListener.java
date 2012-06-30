@@ -39,6 +39,9 @@ public class HoneypotBlockListener implements Listener {
             	int blockPoints = 0;
             	int maxPoints = 0;
             	
+        		final Integer blockId = block.getTypeId();
+    			final String materialName = Material.getMaterial(blockId).toString();
+        			
             	// if offensePoints are defined, we use a pointMap to determine how many points this
             	// broken block is worth.  This allows some blocks to be worth more, so perhaps you
             	// can instaban if they steal honeypot diamonds, but maybe it takes 3 offenses if
@@ -48,12 +51,9 @@ public class HoneypotBlockListener implements Listener {
             		maxPoints = config.getOffensePoints();
             		blockPoints = 1;		// default point value is 1 if nothing is defined in the map
             		
-            		// now lookup this block type in the map
-            		Integer blockId = block.getTypeId();
             		Map<Integer, Integer> typeMap = config.getBlockPointMap();
             		if( typeMap != null ) {
             			Integer points = typeMap.get(blockId);
-            			final String materialName = Material.getMaterial(blockId).toString();
             			plugin.log("points for blockId "+blockId+" ("+materialName+") = "+points);
 
             			if( points != null )
@@ -77,7 +77,8 @@ public class HoneypotBlockListener implements Listener {
                     String logMessage = "player " + playerName + 
                             " broke HoneyPot block at "
                             + Honeypot.prettyPrintLocation(block.getLocation()) 
-                            + ", break count/points: " + points;
+                            + ", break count/points: " + points
+                    		+ " (blockId "+blockId+": "+materialName+")";
 
                     plugin.log(logMessage);
                     if (config.getLogFlag()) {
@@ -104,7 +105,6 @@ public class HoneypotBlockListener implements Listener {
                             config.getPotReason());
                 }
 
-    			final String materialName = Material.getMaterial(block.getTypeId()).toString();
                 String logMessage = "Player " + player.getName() + 
                         " was caught breaking a honeypot block (material="+materialName
                         +") at location "
