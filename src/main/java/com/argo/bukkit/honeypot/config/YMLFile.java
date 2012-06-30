@@ -110,10 +110,12 @@ public class YMLFile implements Config {
 		// now, otherwise we just return the cached map.
 		if( pointKeyMap == null ) {
 			pointKeyMap = new HashMap<Integer, Integer>();
+			
 			ConfigurationSection section = bukkitConfig.getConfigurationSection("offensePointMap");
+			if( section == null )
+				return pointKeyMap;
+			
 			Set<String> configPointKeys = section.getKeys(false);
-//			List<String> configPointKeys = bukkitConfig.getKeys("offensePointMap");
-
 			if( configPointKeys == null || configPointKeys.isEmpty() )
 				return pointKeyMap;
 
