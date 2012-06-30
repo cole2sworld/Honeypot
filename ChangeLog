@@ -1,3 +1,8 @@
+v1.4.1 - Jun 30, 2012
+* Ticket #12: fixed bug preventing rollback from working on shutdown
+* Ticket #9: fixed NPE bug (no line numbers in stack trace to be sure, but hopefully I found and fixed it)
+* added block material detail to honeypot.log for points feature, so it's easy to see what they were breaking
+
 v1.4 - Jun 23, 2012
 * updated build system to maven (easier for others to contribute)
 * minor code cleanup (MCBans2 no longer supported)
