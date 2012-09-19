@@ -1,8 +1,9 @@
-name: ${project.name}
+name: Honeypot
 main: com.argo.bukkit.honeypot.Honeypot
-url: ${project.url}
-version: ${project.version}
+url: http://dev.bukkit.org/server-mods/Honeypot/
+version: 1.4.2.1 ColeBans Edition
 author: Argomirr,morganm,dog.big
+depend: [ColeBans]
 softdepend: [MCBans, WorldEdit]
 commands:
  honeypot:

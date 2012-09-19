@@ -1,5 +1,7 @@
 package com.argo.bukkit.util;
 
+import java.util.Set;
+
 import com.argo.bukkit.honeypot.Honeypot;
 import com.argo.bukkit.honeypot.config.Config;
 import com.mcbans.firestar.mcbans.BukkitInterface;
@@ -8,13 +10,16 @@ import com.mcbans.firestar.mcbans.pluginInterface.Kick;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.cole2sworld.colebans.ColeBansPlugin;
-import com.cole2sworld.colebans.framework.PlayerAlreadyBannedException;
-import com.cole2sworld.colebans.framework.PlayerOfflineException;
 
 /**
  * This class was originally all static methods (arrrrg).. Refactored to be an
@@ -170,11 +175,98 @@ public class BansHandler {
 	 * @param reason
 	 */
 	private void Cban(final Player p, final String reason) {
-		try {
-			cb.banHandler.banPlayer(p.getName(), reason, "[Honeypot]");
-		} catch (final PlayerAlreadyBannedException e) {
-			// okay then :)
-		}
+		new com.cole2sworld.colebans.commands.Ban().run(new String[] {
+				p.getName(),
+				reason
+		}, new CommandSender() {
+			
+			@Override
+			public PermissionAttachment addAttachment(final Plugin arg0) {
+				return null;
+			}
+			
+			@Override
+			public PermissionAttachment addAttachment(final Plugin arg0, final int arg1) {
+				return null;
+			}
+			
+			@Override
+			public PermissionAttachment addAttachment(final Plugin arg0, final String arg1,
+					final boolean arg2) {
+				return null;
+			}
+			
+			@Override
+			public PermissionAttachment addAttachment(final Plugin arg0, final String arg1,
+					final boolean arg2, final int arg3) {
+				return null;
+			}
+			
+			@Override
+			public Set<PermissionAttachmentInfo> getEffectivePermissions() {
+				return null;
+			}
+			
+			@Override
+			public String getName() {
+				return "[Honeypot]";
+			}
+			
+			@Override
+			public Server getServer() {
+				return Bukkit.getServer();
+			}
+			
+			@Override
+			public boolean hasPermission(final Permission arg0) {
+				return true;
+			}
+			
+			@Override
+			public boolean hasPermission(final String arg0) {
+				return true;
+			}
+			
+			@Override
+			public boolean isOp() {
+				return true;
+			}
+			
+			@Override
+			public boolean isPermissionSet(final Permission arg0) {
+				return true;
+			}
+			
+			@Override
+			public boolean isPermissionSet(final String arg0) {
+				return true;
+			}
+			
+			@Override
+			public void recalculatePermissions() {
+				// nom nom nom
+			}
+			
+			@Override
+			public void removeAttachment(final PermissionAttachment arg0) {
+				// nom nom nom
+			}
+			
+			@Override
+			public void sendMessage(final String arg0) {
+				// nom nom nom
+			}
+			
+			@Override
+			public void sendMessage(final String[] arg0) {
+				// nom nom nom
+			}
+			
+			@Override
+			public void setOp(final boolean arg0) {
+				// nom nom nom
+			}
+		});
 	}
 	
 	/**
@@ -182,12 +274,98 @@ public class BansHandler {
 	 * @param reason
 	 */
 	private void Ckick(final Player p, final String reason) {
-		try {
-			cb.kickPlayer(p.getName(), reason);
-		} catch (final PlayerOfflineException e) {
-			e.printStackTrace();
-			// how!?
-		}
+		new com.cole2sworld.colebans.commands.Kick().run(new String[] {
+				p.getName(),
+				reason
+		}, new CommandSender() {
+			
+			@Override
+			public PermissionAttachment addAttachment(final Plugin arg0) {
+				return null;
+			}
+			
+			@Override
+			public PermissionAttachment addAttachment(final Plugin arg0, final int arg1) {
+				return null;
+			}
+			
+			@Override
+			public PermissionAttachment addAttachment(final Plugin arg0, final String arg1,
+					final boolean arg2) {
+				return null;
+			}
+			
+			@Override
+			public PermissionAttachment addAttachment(final Plugin arg0, final String arg1,
+					final boolean arg2, final int arg3) {
+				return null;
+			}
+			
+			@Override
+			public Set<PermissionAttachmentInfo> getEffectivePermissions() {
+				return null;
+			}
+			
+			@Override
+			public String getName() {
+				return "[Honeypot]";
+			}
+			
+			@Override
+			public Server getServer() {
+				return Bukkit.getServer();
+			}
+			
+			@Override
+			public boolean hasPermission(final Permission arg0) {
+				return true;
+			}
+			
+			@Override
+			public boolean hasPermission(final String arg0) {
+				return true;
+			}
+			
+			@Override
+			public boolean isOp() {
+				return true;
+			}
+			
+			@Override
+			public boolean isPermissionSet(final Permission arg0) {
+				return true;
+			}
+			
+			@Override
+			public boolean isPermissionSet(final String arg0) {
+				return true;
+			}
+			
+			@Override
+			public void recalculatePermissions() {
+				// nom nom nom
+			}
+			
+			@Override
+			public void removeAttachment(final PermissionAttachment arg0) {
+				// nom nom nom
+			}
+			
+			@Override
+			public void sendMessage(final String arg0) {
+				// nom nom nom
+			}
+			
+			@Override
+			public void sendMessage(final String[] arg0) {
+				// nom nom nom
+			}
+			
+			@Override
+			public void setOp(final boolean arg0) {
+				// nom nom nom
+			}
+		});
 	}
 	
 	private void Eban(final Player player, final String reason) {
